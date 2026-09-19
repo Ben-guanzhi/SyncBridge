@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sync.mapper.JobMapper">
+
+    <resultMap id="jobWithConfigMap" type="com.sync.model.Job">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="description" column="description"/>
+        <result property="sourceDsId" column="source_ds_id"/>
+        <result property="targetDsId" column="target_ds_id"/>
+        <result property="syncMode" column="sync_mode"/>
+        <result property="scheduleCron" column="schedule_cron"/>
+        <result property="incrementalKey" column="incremental_key"/>
+        <result property="status" column="status"/>
+        <collection property="configs" ofType="com.sync.model.JobConfig">
+            <id property="id" column="config_id"/>
+            <result property="jobId" column="job_id"/>
+            <result property="itemOrder" column="item_order"/>
+            <result property="sourceTable" column="source_table"/>
+            <result property="sourceCondition" column="source_condition"/>
+            <result property="sourceColumns" column="source_columns" typeHandler="com.sync.config.JsonTypeHandler"/>
+            <result property="targetTable" column="target_table"/>
+            <result property="targetWriteMode" column="target_write_mode"/>
+            <result property="upsertKeys" column="upsert_keys" typeHandler="com.sync.config.JsonTypeHandler"/>
+            <result property="fieldMappings" column="field_mappings" typeHandler="com.sync.config.JsonTypeHandler"/>
+            <result property="isMaster" column="is_master"/>
+            <result property="masterDetailRelations" column="master_detail_relations" typeHandler="com.sync.config.JsonTypeHandler"/>
+            <result property="nestedJsonPath" column="nested_json_path"/>
+            <result property="pageSize" column="page_size"/>
+            <result property="paginationKey" column="pagination_key"/>
+            <result property="maxPages" column="max_pages"/>
+            <result property="lastSyncValue" column="last_sync_value"/>
+            <result property="incrementalWindowDays" column="incremental_window_days"/>
+            <result property="enabled" column="config_enabled"/>
+        </collection>
+    </resultMap>
+
+    <select id="findEnabledScheduledJobs" resultType="com.sync.model.Job">
+        SELECT * FROM sync_job
+        WHERE status = 1 AND schedule_cron IS NOT NULL
+        ORDER BY id
+    </select>
+
+    <select id="selectWithConfigs" resultMap="jobWithConfigMap">
+        SELECT
+            j.*,
+            c.id AS config_id,
+            c.job_id,
+            c.item_order,
+            c.source_table,
+            c.source_condition,
+            c.source_columns,
+            c.target_table,
+            c.target_write_mode,
+            c.upsert_keys,
+            c.field_mappings,
+            c.is_master,
+            c.master_detail_relations,
+            c.nested_json_path,
+            c.page_size,
+            c.pagination_key,
+            c.max_pages,
+            c.last_sync_value,
+            c.incremental_window_days,
+            c.enabled AS config_enabled
+        FROM sync_job j
+        LEFT JOIN sync_job_config c ON c.job_id = j.id
+        WHERE j.id = #{id}
+        ORDER BY c.item_order ASC
+    </select>
+
+</mapper>

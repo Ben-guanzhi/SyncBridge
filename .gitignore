@@ -1,0 +1,10 @@
+.idea/
+target/
+node_modules/
+*.exe
+*.log
+nul
+.env
+dist/
+build/
+.DS_Store

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sync.mapper.JobConfigMapper">
+
+    <resultMap id="jobConfigMap" type="com.sync.model.JobConfig">
+        <id property="id" column="id"/>
+        <result property="jobId" column="job_id"/>
+        <result property="itemOrder" column="item_order"/>
+        <result property="sourceTable" column="source_table"/>
+        <result property="sourceCondition" column="source_condition"/>
+        <result property="sourceColumns" column="source_columns"
+                typeHandler="com.sync.config.JsonTypeHandler"/>
+        <result property="targetTable" column="target_table"/>
+        <result property="targetWriteMode" column="target_write_mode"/>
+        <result property="upsertKeys" column="upsert_keys"
+                typeHandler="com.sync.config.JsonTypeHandler"/>
+        <result property="fieldMappings" column="field_mappings"
+                typeHandler="com.sync.config.JsonTypeHandler"/>
+        <result property="isMaster" column="is_master"/>
+        <result property="masterDetailRelations" column="master_detail_relations"
+                typeHandler="com.sync.config.JsonTypeHandler"/>
+        <result property="nestedJsonPath" column="nested_json_path"/>
+        <result property="pageSize" column="page_size"/>
+        <result property="paginationKey" column="pagination_key"/>
+        <result property="maxPages" column="max_pages"/>
+        <result property="lastSyncValue" column="last_sync_value"/>
+        <result property="incrementalWindowDays" column="incremental_window_days"/>
+        <result property="enabled" column="enabled"/>
+    </resultMap>
+
+    <select id="findByJobId" resultMap="jobConfigMap">
+        SELECT * FROM sync_job_config
+        WHERE job_id = #{jobId} AND enabled = 1
+        ORDER BY item_order ASC
+    </select>
+
+    <update id="batchUpdateLastSyncValue">
+        UPDATE sync_job_config
+        SET last_sync_value = #{lastSyncValue}, updated_at = NOW()
+        WHERE id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+</mapper>

@@ -1,0 +1,42 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    # 默认使用 SQLite（开发/测试环境）
+    # url: jdbc:sqlite:${user.home}/.syncbridge/sync_platform.db
+    # driver-class-name: org.sqlite.JDBC
+    # 生产环境使用 MySQL
+    url: jdbc:mysql://127.0.0.1:3306/db_sync_platform?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
+    username: root
+    password: '#Root2026.'
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+
+  # 文件存储配置
+  sync:
+    file:
+      upload-dir: ${user.home}/.syncbridge/uploads
+      preview-limit: 100  # 预览最大行数
+
+mybatis-plus:
+  mapper-locations: classpath*:/mapper/**/*.xml
+  type-aliases-package: com.sync.model
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
+    type-handlers-package: com.sync.config
+  global-config:
+    db-config:
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+
+logging:
+  level:
+    com.sync: DEBUG
+    com.zaxxer.hikari: WARN

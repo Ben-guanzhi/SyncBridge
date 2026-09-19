@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sync.mapper.ExecLogMapper">
+
+    <select id="findByBatchNo" resultType="com.sync.model.ExecLog">
+        SELECT * FROM sync_exec_log
+        WHERE batch_no = #{batchNo}
+        ORDER BY start_time ASC
+    </select>
+
+    <select id="countFailedBetween" resultType="long">
+        SELECT COUNT(*) FROM sync_exec_log
+        WHERE status = 2
+          AND start_time BETWEEN #{start} AND #{end}
+    </select>
+
+    <delete id="clearOldLogsBefore">
+        DELETE FROM sync_exec_log WHERE start_time &lt; #{before}
+    </delete>
+
+</mapper>

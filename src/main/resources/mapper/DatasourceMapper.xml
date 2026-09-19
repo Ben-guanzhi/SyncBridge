@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sync.mapper.DatasourceMapper">
+
+    <resultMap id="datasourceResultMap" type="com.sync.model.DatasourceConfig">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="type" column="type"/>
+        <result property="host" column="host"/>
+        <result property="port" column="port"/>
+        <result property="databaseName" column="database_name"/>
+        <result property="username" column="username"/>
+        <result property="password" column="password"/>
+        <result property="extraConfig" column="extra_config" typeHandler="com.sync.config.JsonTypeHandler"/>
+        <result property="baseUrl" column="base_url"/>
+        <result property="authMethod" column="auth_method"/>
+        <result property="authToken" column="auth_token"/>
+        <result property="headers" column="headers" typeHandler="com.sync.config.JsonTypeHandler"/>
+        <result property="maxConnections" column="max_connections"/>
+        <result property="timeoutMs" column="timeout_ms"/>
+        <result property="enabled" column="enabled"/>
+    </resultMap>
+
+    <select id="findByName" resultMap="datasourceResultMap">
+        SELECT * FROM sync_datasource WHERE name = #{name} LIMIT 1
+    </select>
+
+    <select id="findAllEnabled" resultMap="datasourceResultMap">
+        SELECT * FROM sync_datasource WHERE enabled = 1 ORDER BY id
+    </select>
+
+</mapper>
